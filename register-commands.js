@@ -1,3 +1,4 @@
+const TOKEN = process.env['TOKEN']
 const CLIENT_ID = process.env['CLIENT_ID']
 const GUILD_ID = process.env['GUILD_ID']
 const { REST, Routes } = require('discord.js');
@@ -12,6 +13,16 @@ const commands = [
     name: 'ping',
     description: 'replies with pong',
   },
+  {
+    name: 'embed',
+    description: 'example embed',
+  },
+
+    {
+    name: 'dailyshop',
+    description: 'Fortnite Daily Shop',
+  },
+
 ];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
