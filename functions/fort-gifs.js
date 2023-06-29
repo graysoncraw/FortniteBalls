@@ -5,7 +5,7 @@ const { EmbedBuilder, MessageEmbed } = require('discord.js');
 
 const getFortGifs = async (interaction) => {
   try {
-    const response = await axios.get(`https://api.giphy.com/v1/gifs/search?api_key=Q1RGhvNSYoKJbALqt5917nybbZhC1VXA&q=fortnite&limit=200&offset=0&rating=g&lang=en&bundle=messaging_non_clips`);
+    const response = await axios.get(`https://api.giphy.com/v1/gifs/search?api_key=${FORTAPI}&q=fortnite&limit=200&offset=0&rating=g&lang=en&bundle=messaging_non_clips`);
     const gifsJson = response.data;
     //console.log(gifsJson);
     const imageEmbed = new EmbedBuilder()
