@@ -5,7 +5,9 @@ const { Client, IntentsBitField, ActivityType, EmbedBuilder } = require('discord
 require('dotenv').config();
 const cron = require('cron');
 const axios = require("axios");
-const getDailyShop = require('./functions/get-daily-shop');
+const getDailyShop = require('./functions/daily-shop');
+const getFortGifs = require('./functions/fort-gifs');
+
 
 const client = new Client({
   intents: [
@@ -54,6 +56,9 @@ client.on('interactionCreate', async (interaction) => {
   //Get daily shop via TRN API
   if (interaction.commandName == "dailyshop") {
     getDailyShop(interaction);
+  }
+  if (interaction.commandName == "fortniteballs") {
+    getFortGifs(interaction);
   }
 })
 

@@ -28,17 +28,17 @@ const getDailyShop = async (interaction) => {
             inline: true,
           })
           .setThumbnail(item.imageUrl);
-          embedArray.push(embed);
-          //console.log(embed);
-        }
+        embedArray.push(embed);
+        //console.log(embed);
+      }
     });
-    try{
+    try {
       //if the interaction is an interaction
-      interaction.reply({embeds: embedArray});
+      interaction.reply({ embeds: embedArray });
     }
-    catch(error){
+    catch (error) {
       //if the "interaction" is actually a channel
-      interaction.send({embeds: embedArray});
+      interaction.send({ embeds: embedArray });
     }
     //console.log(embedArray);
   } catch (error) {

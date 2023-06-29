@@ -14,6 +14,11 @@ const commands = [
     name: 'dailyshop',
     description: 'Fortnite Daily Shop',
   },
+  {
+    name: 'fortniteballs',
+    description: 'Sends a Fortnite Gif',
+  },
+  
 
 ];
 
