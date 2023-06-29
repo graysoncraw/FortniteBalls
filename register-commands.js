@@ -5,20 +5,12 @@ const { REST, Routes } = require('discord.js');
 require('dotenv').config();
 
 const commands = [
-  {
-    name: 'hey',
-    description: 'replies with hey!',
-  },
+
   {
     name: 'ping',
     description: 'replies with pong',
   },
   {
-    name: 'embed',
-    description: 'example embed',
-  },
-
-    {
     name: 'dailyshop',
     description: 'Fortnite Daily Shop',
   },
