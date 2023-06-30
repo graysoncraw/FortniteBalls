@@ -1,7 +1,7 @@
 const APIKEY = process.env['TRN_API_KEY'];
 const FORTAPI = process.env['FORT_GIF_API']
 const axios = require("axios");
-const { EmbedBuilder, MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 const getFortGifs = async (interaction) => {
   try {
