@@ -1,6 +1,7 @@
 const { ActivityType } = require('discord.js');
 const cron = require('cron');
 
+//readys up the bot on startup with a streaming link and a timer for sending the daily shop at 7:01
 module.exports= (client) => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity({

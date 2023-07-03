@@ -1,8 +1,9 @@
-const APIKEY = process.env['TRN_API_KEY']
+const APIKEY = process.env['TRN_API_KEY'];
 const axios = require("axios");
 const { EmbedBuilder } = require('discord.js');
 
 const getDailyShop = async (interaction) => {
+  //get shop through fortnitetracker api
   try {
     const response = await axios.get('https://api.fortnitetracker.com/v1/store/', {
       headers: {
@@ -11,6 +12,7 @@ const getDailyShop = async (interaction) => {
     });
     const dailyshop = response.data;
 
+    //loop through each item that is marked as daily, adding it to an array of embeds
     let embedArray = [];
     dailyshop.forEach(item => {
       if (item.storeCategory == "BRDailyStorefront") {

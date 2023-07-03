@@ -16,6 +16,7 @@ const client = new Client({
   ]
 });
 
+//djs-commander for setting up a clean and easy command handler
 new CommandHandler({
   client,
   commandsPath: path.join(__dirname, 'commands'),

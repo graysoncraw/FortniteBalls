@@ -6,8 +6,7 @@ It primarily will draw from APIs (and maybe databases later) and will consist of
 
 <ul>
   <li>Daily Shop (✅)</li>
-  <li>Automatic Patch Updates</li>
-  <li>Player Stat Lookups</li>
+  <li>Player Stat Lookups (✅)</li>
   <li>Random Gif Generator (✅)</li>
   <li>Notification Setup For Specific Items</li>
 </ul> 
