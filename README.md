@@ -2,7 +2,7 @@
 
 FortniteBalls is a fun little discord bot project that I started working on to improve my JS skills and learn how to make bots.
 
-It will consist of 5 main functions using API's and a database:
+It consists of 5 main functions using API's and a database:
 
 <ul>
   <li>Daily Shop (✅)</li>
@@ -13,4 +13,4 @@ It will consist of 5 main functions using API's and a database:
 
 Also uses djs-commander and discord-js packages.
 
-The bot is hosted and coded in Replit, a terrific online IDE.
+The bot is hosted by and coded in Replit, a terrific online IDE.
