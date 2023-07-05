@@ -43,11 +43,21 @@ const listReminders = async (interaction) => {
       });
       try {
         //if the interaction is an interaction
-        interaction.reply(itemString);
+        if (itemString != ""){
+          interaction.reply(itemString);
+        }
+        else{
+          interaction.reply("None of the reminders set are currently in the item shop.");
+        }
       }
       catch (error) {
         //if the "interaction" is actually a channel
-        interaction.send(itemString);
+        if (itemString != ""){
+          interaction.send(itemString);
+        }
+        else{
+          interaction.send("None of the reminders set are currently in the item shop.");
+        }
       }
     }
   } catch (error) {
