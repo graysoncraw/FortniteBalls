@@ -14,7 +14,7 @@ module.exports= (client) => {
   });
   let scheduledMessage = new cron.CronJob('00 01 00 * * *', () => {
     const channel = client.channels.cache.get(CHANNEL);
-    channel.send(`Item shop for ${new Date().toLocaleDateString()}`);
+    channel.send(`Item shop for ${new Date().toLocaleDateString()} @here`);
     getDailyShop(channel);
     listReminders(channel);
     console.log("Daily Shop Success");

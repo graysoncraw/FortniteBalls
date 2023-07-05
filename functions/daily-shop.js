@@ -34,6 +34,7 @@ const getDailyShop = async (interaction) => {
         //console.log(embed);
       }
     });
+
     try {
       //if the interaction is an interaction
       interaction.reply({ embeds: embedArray });
