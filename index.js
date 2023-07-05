@@ -24,13 +24,4 @@ new CommandHandler({
   testServer: GUILD,
 });
 
-// client.on("messageCreate", (msg) => {
-//   if (msg.author.bot) {
-//     return; // ignore bots
-//   }
-//   if (msg.content == "hi") {
-//     msg.reply("Hello!");
-//   }
-// })
-
 client.login(TOKEN);
