@@ -12,11 +12,11 @@ module.exports= (client) => {
     type: ActivityType.Streaming,
     url: "https://www.youtube.com/watch?v=yLt5Vw5u2YM&pp=ygUMZ3JpZGR5IGVtb3Rl",
   });
-  let scheduledMessage = new cron.CronJob('00 05 00 * * *', () => {
+  let scheduledMessage = new cron.CronJob('00 05 00 * * *', async () => {
     const channel = client.channels.cache.get(CHANNEL);
     channel.send(`Item shop for ${new Date().toLocaleDateString()} @here`);
-    getDailyShop(channel);
-    listReminders(channel);
+    await getDailyShop(channel);
+    await listReminders(channel);
     console.log("Daily Shop Success");
   });
   scheduledMessage.start();
