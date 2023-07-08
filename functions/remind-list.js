@@ -4,13 +4,18 @@ const { EmbedBuilder } = require('discord.js');
 const Database = require("@replit/database");
 const db = new Database();
 
-const listReminders = async (interaction) => {  
-  
+const listReminders = async (interaction) => {
+
   async function listKeys() {
     let keys = await db.list()
     return keys;
   };
   
+  async function getKeyValue(key) {
+    let value = await db.get(key);
+    return value;
+  };
+
   try {
     const response = await axios.get('https://api.fortnitetracker.com/v1/store/', {
       headers: {
@@ -18,44 +23,44 @@ const listReminders = async (interaction) => {
       }
     });
     const dailyshop = response.data;
-    
-   //get the keys from the database
+
+    //get the keys from the database
     const keys = await listKeys();
 
     if (keys.length === 0) {
-      try{
+      try {
         interaction.reply("There are no reminders set");
       }
-      catch(error){
+      catch (error) {
         interaction.send("There are no reminders set");
       }
     } else {
       let itemString = "";
       //loop through each item that is in the shop and compare with item in the DB
-      keys.forEach(function(key) {
-        //console.log(key);
-        dailyshop.forEach(shopItem => {
-          if (shopItem.name === key){
-            itemString += (`${key} is currently in the item shop!\n`);
+      for (const key of keys) {
+        for (const shopItem of dailyshop) {
+          if (shopItem.name === key) {
+            //const value = await getKeyValue(key);
+            itemString += (`${key} (${shopItem.vBucks.toString()} vBucks) is currently in the item shop!\n`);
             console.log(`${key} match!`);
           }
-        });
-      });
+        }
+      }
       try {
         //if the interaction is an interaction
-        if (itemString != ""){
+        if (itemString != "") {
           interaction.reply(itemString);
         }
-        else{
+        else {
           interaction.reply("None of the reminders set are currently in the item shop.");
         }
       }
       catch (error) {
         //if the "interaction" is actually a channel
-        if (itemString != ""){
+        if (itemString != "") {
           interaction.send(itemString);
         }
-        else{
+        else {
           interaction.send("None of the reminders set are currently in the item shop.");
         }
       }
@@ -63,7 +68,7 @@ const listReminders = async (interaction) => {
   } catch (error) {
     console.error(error);
     interaction.reply('Something failed, idk. API is probably down.');
-  }  
+  }
 };
 
 module.exports = listReminders;

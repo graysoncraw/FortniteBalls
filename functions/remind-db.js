@@ -11,7 +11,7 @@ const setReminders = async (interaction, item) => {
     return keys;
   };
   
-  setKeyValue(item, "item");
+  await setKeyValue(item, interaction.user.username.toString());
   console.log(`${item} added to DB`);
   listKeys().then((keys) => console.log(keys));
 };
