@@ -1,4 +1,4 @@
-const APIKEY = process.env['TRN_API_KEY'];
+const APIKEY = process.env['STAT_API'];
 const axios = require("axios");
 const { EmbedBuilder } = require('discord.js');
 const Database = require("@replit/database");
@@ -17,12 +17,13 @@ const listReminders = async (interaction) => {
   };
 
   try {
-    const response = await axios.get('https://api.fortnitetracker.com/v1/store/', {
+    const response = await axios.get('https://fortniteapi.io/v2/shop/', {
       headers: {
-        'TRN-API-KEY': `${APIKEY}`
+        'Authorization': `${APIKEY}`
       }
     });
     const dailyshop = response.data;
+    const dailyItems = dailyshop.shop;
 
     //get the keys from the database
     const keys = await listKeys();
@@ -38,10 +39,10 @@ const listReminders = async (interaction) => {
       let itemString = "";
       //loop through each item that is in the shop and compare with item in the DB
       for (const key of keys) {
-        for (const shopItem of dailyshop) {
-          if (shopItem.name === key) {
+        for (const shopItem of dailyItems) {
+          if (shopItem.displayName === key) {
             //const value = await getKeyValue(key);
-            itemString += (`${key} (${shopItem.vBucks.toString()} vBucks) is currently in the item shop!\n`);
+            itemString += (`${key} (${shopItem.price.regularPrice.toString()} vBucks) is currently in the item shop!\n`);
             console.log(`${key} match!`);
           }
         }
