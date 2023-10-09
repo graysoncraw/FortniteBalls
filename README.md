@@ -11,6 +11,6 @@ It consists of 5 main functions using API's and a database:
   <li>Notification Setup For Specific Items (✅)</li>
 </ul> 
 
-Also uses djs-commander and discord-js packages.
+Also uses djs-commander and discord-js packages, and API's from Giphy and FortniteAPI.io.
 
 The bot is hosted by and coded in Replit, a terrific online IDE.
