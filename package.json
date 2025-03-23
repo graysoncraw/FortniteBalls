@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "wrangler dev",
+    "deploy:staging": "wrangler deploy --minify --env staging",
+    "deploy:prod": "wrangler deploy --minify --env production",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "keywords": [],
   "author": "",
