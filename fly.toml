@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for fortniteballs on 2025-03-23T23:03:02Z
+# fly.toml app configuration file generated for fortniteballs on 2025-03-23T23:12:15Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -20,4 +20,4 @@ primary_region = 'dfw'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 1024
+  memory_mb = 256
