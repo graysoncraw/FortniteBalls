@@ -2,13 +2,13 @@ const { SlashCommandBuilder } = require('discord.js');
 const getFortStats = require('../functions/fort-stats');
 const getFortGifs = require('../functions/fort-gifs');
 const getDailyShop = require('../functions/daily-shop');
-const setReminders = require('../functions/remind-db');
-const listReminders = require('../functions/remind-list');
-const activeReminders = require('../functions/remind-active');
-const deleteReminders = require('../functions/remind-delete');
+const setNotifications = require('../functions/notifs-set');
+const inshopNotifications = require('../functions/notifs-inshop');
+const storedNotifications = require('../functions/notifs-stored');
+const deleteNotifications = require('../functions/notifs-delete');
 
 
-//instantiates every command under "fb" and calls them
+// Instantiates every command under "/fb" and calls them
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fb')
@@ -30,30 +30,30 @@ module.exports = {
       fortstore.setName("dailyshop")
       .setDescription('Sends the daily fortnite shop'))
 
-    .addSubcommand((fortremind) => 
-      fortremind.setName("remind")
-      .setDescription('Set a reminder for when an item comes to the shop')
+    .addSubcommand((setNotif) => 
+      setNotif.setName("notify")
+      .setDescription('Setup a notification for when an item comes to the shop')
       .addStringOption((roption) => 
         roption.setName('item')
         .setDescription('Item to save')
         .setRequired(true)))
 
-    .addSubcommandGroup((managereminders) => 
-      managereminders
-        .setName("managereminders")
+    .addSubcommandGroup((managenotifs) => 
+      managenotifs
+        .setName("managenotifs")
         .setDescription('Manage reminders')
-          .addSubcommand((listreminders) => 
-          listreminders
+          .addSubcommand((storednotifs) => 
+            storednotifs
             .setName("shoplist")
-            .setDescription('Reminders in shop'))
-          .addSubcommand((activereminders) => 
-          activereminders
-            .setName("active")
-            .setDescription('Reminders active in database'))
-          .addSubcommand((deletereminders) => 
-            deletereminders
+            .setDescription('Notifications in shop'))
+          .addSubcommand((inshopnotifs) => 
+            inshopnotifs
+            .setName("stored")
+            .setDescription('Notifications stored in database'))
+          .addSubcommand((deletenotif) => 
+            deletenotif
             .setName("delete")
-            .setDescription('Delete reminders')
+            .setDescription('Delete notification')
             .addStringOption((doption) => 
               doption.setName('item')
               .setDescription('Item to delete')
@@ -75,18 +75,17 @@ module.exports = {
     else if (subcommand === "dailyshop"){
       getDailyShop(interaction);
     }
-    else if (subcommand === "remind"){
-      setReminders(interaction, item);
-      interaction.reply(`${item} added to reminders!`);
+    else if (subcommand === "notify"){
+      setNotifications(interaction, item);
     }
     else if (subcommand === "shoplist"){
-      listReminders(interaction);      
+      inshopNotifications(interaction);      
     }
-    else if (subcommand === "active"){
-      activeReminders(interaction);      
+    else if (subcommand === "stored"){
+      storedNotifications(interaction);      
     }
     else if (subcommand === "delete"){
-      deleteReminders(interaction, item);      
+      deleteNotifications(interaction, item);      
     }
   },
 };

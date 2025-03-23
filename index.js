@@ -1,6 +1,6 @@
-const TOKEN = process.env['TOKEN'];
-//const CHANNEL = process.env['CHANNEL_ID'];
-//const GUILD = process.env['GUILD_ID'];
+require('dotenv').config();
+
+const TOKEN = process.env.TOKEN;
 
 const { Client, IntentsBitField } = require('discord.js');
 const { CommandHandler } = require('djs-commander');
@@ -17,7 +17,7 @@ const client = new Client({
   ]
 });
 
-//djs-commander for setting up a clean and easy command handler
+// djs-commander for setting up a clean and easy command handler
 new CommandHandler({
   client,
   commandsPath: path.join(__dirname, 'commands'),

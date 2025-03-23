@@ -117,14 +117,14 @@ class WebSocketManager extends EventEmitter {
 
   /**
    * Emits a debug message.
-   * @param {string} message The debug message
+   * @param {string[]} messages The debug message
    * @param {?number} [shardId] The id of the shard that emitted this message, if any
    * @private
    */
-  debug(message, shardId) {
+  debug(messages, shardId) {
     this.client.emit(
       Events.Debug,
-      `[WS => ${typeof shardId === 'number' ? `Shard ${shardId}` : 'Manager'}] ${message}`,
+      `[WS => ${typeof shardId === 'number' ? `Shard ${shardId}` : 'Manager'}] ${messages.join('\n\t')}`,
     );
   }
 
@@ -155,6 +155,7 @@ class WebSocketManager extends EventEmitter {
         },
         compression: zlib ? CompressionMethod.ZlibStream : null,
       };
+      if (ws.buildIdentifyThrottler) wsOptions.buildIdentifyThrottler = ws.buildIdentifyThrottler;
       if (ws.buildStrategy) wsOptions.buildStrategy = ws.buildStrategy;
       this._ws = new WSWebSocketManager(wsOptions);
       this.attachEvents();
@@ -169,15 +170,8 @@ class WebSocketManager extends EventEmitter {
     });
 
     const { total, remaining } = sessionStartLimit;
-
-    this.debug(`Fetched Gateway Information
-    URL: ${gatewayURL}
-    Recommended Shards: ${recommendedShards}`);
-
-    this.debug(`Session Limit Information
-    Total: ${total}
-    Remaining: ${remaining}`);
-
+    this.debug(['Fetched Gateway Information', `URL: ${gatewayURL}`, `Recommended Shards: ${recommendedShards}`]);
+    this.debug(['Session Limit Information', `Total: ${total}`, `Remaining: ${remaining}`]);
     this.gateway = `${gatewayURL}/`;
 
     this.client.options.shardCount = await this._ws.getShardCount();
@@ -230,7 +224,7 @@ class WebSocketManager extends EventEmitter {
    * @private
    */
   attachEvents() {
-    this._ws.on(WSWebSocketShardEvents.Debug, ({ message, shardId }) => this.debug(message, shardId));
+    this._ws.on(WSWebSocketShardEvents.Debug, ({ message, shardId }) => this.debug([message], shardId));
     this._ws.on(WSWebSocketShardEvents.Dispatch, ({ data, shardId }) => {
       this.client.emit(Events.Raw, data, shardId);
       this.emit(data.t, data.d, shardId);
@@ -257,7 +251,7 @@ class WebSocketManager extends EventEmitter {
          * @param {number} id The shard id that disconnected
          */
         this.client.emit(Events.ShardDisconnect, { code, reason: reasonIsDeprecated, wasClean: true }, shardId);
-        this.debug(GatewayCloseCodes[code], shardId);
+        this.debug([`Shard not resumable: ${code} (${GatewayCloseCodes[code] ?? CloseCodes[code]})`], shardId);
         return;
       }
 
@@ -290,7 +284,7 @@ class WebSocketManager extends EventEmitter {
     });
 
     this._ws.on(WSWebSocketShardEvents.HeartbeatComplete, ({ heartbeatAt, latency, shardId }) => {
-      this.debug(`Heartbeat acknowledged, latency of ${latency}ms.`, shardId);
+      this.debug([`Heartbeat acknowledged, latency of ${latency}ms.`], shardId);
       const shard = this.shards.get(shardId);
       shard.lastPingTimestamp = heartbeatAt;
       shard.ping = latency;
@@ -320,12 +314,12 @@ class WebSocketManager extends EventEmitter {
    * Destroys this manager and all its shards.
    * @private
    */
-  destroy() {
+  async destroy() {
     if (this.destroyed) return;
     // TODO: Make a util for getting a stack
-    this.debug(`Manager was destroyed. Called by:\n${new Error().stack}`);
+    this.debug([Object.assign(new Error(), { name: 'Manager was destroyed:' }).stack]);
     this.destroyed = true;
-    this._ws.destroy({ code: CloseCodes.Normal });
+    await this._ws?.destroy({ code: CloseCodes.Normal, reason: 'Manager was destroyed' });
   }
 
   /**
@@ -363,7 +357,7 @@ class WebSocketManager extends EventEmitter {
    */
   checkShardsReady() {
     if (this.status === Status.Ready) return;
-    if (this.shards.size !== this.totalShards || this.shards.some(s => s.status !== Status.Ready)) {
+    if (this.shards.size !== this.totalShards || this.shards.some(shard => shard.status !== Status.Ready)) {
       return;
     }
 

@@ -21,7 +21,7 @@ const getFortStats = async (interaction, username) => {
       }
     });
     const statsLookupData = statsLookup.data;
-    //console.log(statsLookupData);
+    console.log(statsLookupData);
     if (statsLookupData.result === false){
       interaction.reply(`${username}'s profile is private.`);
     }
@@ -49,7 +49,7 @@ const getFortStats = async (interaction, username) => {
     }  
   } catch (error) {
     console.error(error);
-    interaction.reply('Failed to retrieve stats. API is probably down.');
+    interaction.reply('Failed to retrieve stats.');
   }
 };
 
