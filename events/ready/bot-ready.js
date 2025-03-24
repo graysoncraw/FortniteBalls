@@ -12,7 +12,7 @@ module.exports= (client) => {
     type: ActivityType.Streaming,
     url: "https://www.youtube.com/watch?v=yLt5Vw5u2YM&pp=ygUMZ3JpZGR5IGVtb3Rl",
   });
-  let scheduledMessage = new cron.CronJob('00 05 19 * * *', async () => {
+  let scheduledMessage = new cron.CronJob('00 05 00 * * *', async () => {
     const channel = client.channels.cache.get(CHANNEL);
     channel.send(`Daily Shop Notifications ${new Date().toLocaleDateString()} @here`);
     await inshopNotifications(channel);
