@@ -41,7 +41,7 @@ module.exports = {
     .addSubcommandGroup((managenotifs) => 
       managenotifs
         .setName("managenotifs")
-        .setDescription('Manage reminders')
+        .setDescription('Manage notifications')
           .addSubcommand((storednotifs) => 
             storednotifs
             .setName("shoplist")

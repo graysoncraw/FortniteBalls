@@ -1,4 +1,4 @@
-const { remindersDB, deleteKey, listKeys } = require('../database/notifications-db');
+const { notificationsDB, deleteKey, listKeys } = require('../database/notifications-db');
 
 const deleteNotifications = async (interaction, item) => {  
   var keys = listKeys();

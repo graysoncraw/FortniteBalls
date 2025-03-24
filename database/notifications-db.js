@@ -1,4 +1,4 @@
-// Global dictionary to store reminders
+// Global dictionary to store notifications
 const notificationsDB = {};
 
 module.exports = {

@@ -1,6 +1,6 @@
 const APIKEY = process.env['FNBR_API'];
 const axios = require("axios");
-const { remindersDB, setKeyValue, getKeyValue, listKeys } = require('../database/notifications-db');
+const { notificationsDB, setKeyValue, getKeyValue, listKeys } = require('../database/notifications-db');
 
 const inshopNotifications = async (interaction) => {
 
