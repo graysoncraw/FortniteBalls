@@ -7,7 +7,6 @@ const inshopNotifications = require('../functions/notifs-inshop');
 const storedNotifications = require('../functions/notifs-stored');
 const deleteNotifications = require('../functions/notifs-delete');
 
-
 // Instantiates every command under "/fb" and calls them
 module.exports = {
   data: new SlashCommandBuilder()

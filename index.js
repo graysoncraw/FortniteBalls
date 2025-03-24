@@ -1,14 +1,13 @@
 require('dotenv').config();
-
 const TOKEN = process.env.TOKEN;
 
-const { Client, IntentsBitField } = require('discord.js');
+const { Client: DiscordClient, IntentsBitField } = require('discord.js');
 const { CommandHandler } = require('djs-commander');
 
 const path = require('path');
 const keepAlive = require('./server');
 
-const client = new Client({
+const client = new DiscordClient({
   intents: [
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMembers,

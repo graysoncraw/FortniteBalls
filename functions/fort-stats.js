@@ -27,6 +27,7 @@ const getFortStats = async (interaction, username) => {
     }
     else{
       //create a simple clean embed for the stats
+      console.log("Stats retrieved successfully")
       const embed = new EmbedBuilder()
         .setTitle(statsLookupData.name)
         .setDescription(`Level ${statsLookupData.account.level.toString()}`)
