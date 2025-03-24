@@ -47,6 +47,7 @@ const getDailyShop = async (interaction) => {
       }
 
       embedArray.push(embed);
+      console.log("Embed array stuffed")
     }
 
     try{

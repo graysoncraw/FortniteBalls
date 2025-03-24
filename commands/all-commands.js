@@ -7,7 +7,6 @@ const inshopNotifications = require('../functions/notifs-inshop');
 const storedNotifications = require('../functions/notifs-stored');
 const deleteNotifications = require('../functions/notifs-delete');
 
-
 // Instantiates every command under "/fb" and calls them
 module.exports = {
   data: new SlashCommandBuilder()
@@ -41,7 +40,7 @@ module.exports = {
     .addSubcommandGroup((managenotifs) => 
       managenotifs
         .setName("managenotifs")
-        .setDescription('Manage reminders')
+        .setDescription('Manage notifications')
           .addSubcommand((storednotifs) => 
             storednotifs
             .setName("shoplist")

@@ -1,6 +1,6 @@
 const APIKEY = process.env['FNBR_API'];
 const axios = require("axios");
-const { remindersDB, setKeyValue, getKeyValue, listKeys } = require('../database/notifications-db');
+const { listItems } = require('../database/notifications-db');
 
 const inshopNotifications = async (interaction) => {
 
@@ -15,7 +15,7 @@ const inshopNotifications = async (interaction) => {
     const featuredItems = dailyshop.data.featured;
 
     // Get the keys from the database
-    const keys = await listKeys();
+    const keys = await listItems();
 
     if (keys.length === 0) {
       try {
@@ -30,7 +30,6 @@ const inshopNotifications = async (interaction) => {
       for (const key of keys) {
         for (const item of featuredItems) {
           if (item.name === key) {
-            //const value = await getKeyValue(key);
             itemString += (`${key} (${item.price.toString()} vBucks) is currently in the item shop!\n`);
             console.log(`${key} match!`);
           }
