@@ -3,20 +3,15 @@ const DB_PASSWORD = process.env['DB_PASSWORD'];
 const DB_HOST = process.env['DB_HOST'];
 const DB_PORT = process.env['DB_PORT'];
 const DB_NAME = process.env['DB_NAME'];
-const DB_CONNSTRING = process.env['DB_CONNSTRING'];
 const { Client: PgClient } = require('pg');
 
-//const database = new PgClient({
-  //user: DB_USERNAME,
-  //password: DB_PASSWORD,
-  //host: DB_HOST,
-  //port: Number(DB_PORT),
-  //database: DB_NAME,
-  //ssl: {rejectUnauthorized: false},
-//});
-
 const database = new PgClient({
-  connectionString: DB_CONNSTRING
+  user: DB_USERNAME,
+  password: DB_PASSWORD,
+  host: DB_HOST,
+  port: Number(DB_PORT),
+  database: DB_NAME,
+  ssl: {rejectUnauthorized: false},
 });
 
 database
