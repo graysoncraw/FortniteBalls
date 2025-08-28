@@ -5,7 +5,6 @@ const { Client: DiscordClient, IntentsBitField } = require('discord.js');
 const { CommandHandler } = require('djs-commander');
 
 const path = require('path');
-const keepAlive = require('./server');
 
 const client = new DiscordClient({
   intents: [
@@ -24,5 +23,4 @@ new CommandHandler({
   //testServer: GUILD,
 });
 
-// keepAlive();
 client.login(TOKEN);
