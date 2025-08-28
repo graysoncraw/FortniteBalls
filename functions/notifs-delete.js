@@ -8,7 +8,7 @@ const deleteNotifications = async (interaction, item) => {
     deleteItem(item);
     interaction.reply(`Successfully deleted ${item} from the database.`);
   } else {
-    interaction.reply(`${item} does not exist within the database.`);
+    interaction.reply(`${item} does not exist within the database (check your casing).`);
   }
   console.log(`${item} removed from DB`);
 };

@@ -19,9 +19,11 @@ const inshopNotifications = async (interaction) => {
 
     if (keys.length === 0) {
       try {
+        console.log("no notifs")
         interaction.reply("There are no notifications set");
       }
       catch (error) {
+        console.log("error inshop")
         interaction.send("There are no notifications set");
       }
     } else {
@@ -29,8 +31,8 @@ const inshopNotifications = async (interaction) => {
       // Loop through each item that is in the shop and compare with item in the DB
       for (const key of keys) {
         for (const item of featuredItems) {
-          if (item.name === key) {
-            itemString += (`${key} (${item.price.toString()} vBucks) is currently in the item shop!\n`);
+          if (item.name.toLowerCase().includes(key.toLowerCase()) && !itemString.includes(key.toLowerCase())) {
+            itemString += (`${item.name} (${item.price.toString()} vBucks) is currently in the item shop!\n`);
             console.log(`${key} match!`);
           }
         }
