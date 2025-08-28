@@ -24,5 +24,5 @@ new CommandHandler({
   //testServer: GUILD,
 });
 
-keepAlive();
+// keepAlive();
 client.login(TOKEN);

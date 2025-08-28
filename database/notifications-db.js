@@ -1,70 +1,78 @@
-const DB_USERNAME = process.env['DB_USERNAME'];
-const DB_PASSWORD = process.env['DB_PASSWORD'];
-const DB_HOST = process.env['DB_HOST'];
-const DB_PORT = process.env['DB_PORT'];
-const DB_NAME = process.env['DB_NAME'];
-const { Client: PgClient } = require('pg');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-const database = new PgClient({
-  user: DB_USERNAME,
-  password: DB_PASSWORD,
-  host: DB_HOST,
-  port: Number(DB_PORT),
-  database: DB_NAME,
-  ssl: {rejectUnauthorized: false},
+const dbPath = path.join(__dirname, 'notifications.sqlite');
+const database = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('Error opening database', err);
+  } else {
+    console.log('Connected to SQLite database');
+    database.run(
+      `CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item TEXT,
+        username TEXT
+      )`
+    );
+  }
 });
 
-database
-  .connect()
-  .then(() => {
-    console.log('Connected to database');
-  })
-  .catch((err) => {
-    console.error('Error connecting to database', err);
-  });
-
-async function getUsername(item){
-  try {
-    const selectQuery = `SELECT username FROM notifications WHERE item = $1 LIMIT 1`;
-    const result = await database.query(selectQuery, [item]);
-    return result.rows[0].username; // Maps object to array
-  } catch (err) {
-    console.error('Error executing query', err);
-    return [];
-  }
-}
-
-async function insertItem(item, username){
-  const insertQuery = `INSERT INTO notifications (item, username) VALUES ($1, $2)`;
-  database.query(insertQuery, [item, username], (err, result) => {
-    if (err) {
-      console.error('Error inserting data', err);
-    } else {
-      console.log('Data inserted successfully');
-    }
+async function getUsername(item) {
+  return new Promise((resolve, reject) => {
+    const selectQuery = `SELECT username FROM notifications WHERE item = ? LIMIT 1`;
+    database.get(selectQuery, [item], (err, row) => {
+      if (err) {
+        console.error('Error executing query', err);
+        resolve(null);
+      } else {
+        resolve(row ? row.username : null);
+      }
+    });
   });
 }
 
-async function deleteItem(item){
-  const deleteQuery = `DELETE FROM notifications WHERE item = $1`;
-  database.query(deleteQuery, [item], (err, result) => {
-    if (err) {
-      console.error('Error deleting data', err);
-    } else {
-      console.log('Data deleted successfully');
-    }
+async function insertItem(item, username) {
+  return new Promise((resolve, reject) => {
+    const insertQuery = `INSERT OR REPLACE INTO notifications (item, username) VALUES (?, ?)`;
+    database.run(insertQuery, [item, username], function (err) {
+      if (err) {
+        console.error('Error inserting data', err);
+        resolve(false);
+      } else {
+        console.log('Data inserted successfully');
+        resolve(true);
+      }
+    });
+  });
+}
+
+async function deleteItem(item) {
+  return new Promise((resolve, reject) => {
+    const deleteQuery = `DELETE FROM notifications WHERE item = ?`;
+    database.run(deleteQuery, [item], function (err) {
+      if (err) {
+        console.error('Error deleting data', err);
+        resolve(false);
+      } else {
+        console.log('Data deleted successfully');
+        resolve(true);
+      }
+    });
   });
 }
 
 async function listItems() {
-  try {
+  return new Promise((resolve, reject) => {
     const selectQuery = `SELECT item FROM notifications`;
-    const result = await database.query(selectQuery);
-    return result.rows.map(row => row.item); // Maps object to array
-  } catch (err) {
-    console.error('Error executing query', err);
-    return [];
-  }
+    database.all(selectQuery, [], (err, rows) => {
+      if (err) {
+        console.error('Error executing query', err);
+        resolve([]);
+      } else {
+        resolve(rows.map(row => row.item));
+      }
+    });
+  });
 }
 
 module.exports = {
