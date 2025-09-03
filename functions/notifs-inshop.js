@@ -31,7 +31,7 @@ const inshopNotifications = async (interaction) => {
       // Loop through each item that is in the shop and compare with item in the DB
       for (const key of keys) {
         for (const item of featuredItems) {
-          if (item.name.toLowerCase().includes(key.toLowerCase()) && !itemString.includes(item.name)) {
+          if (item.name.toLowerCase().includes(key.toLowerCase()) && !itemString.includes(item.name) && Number.isInteger(item.price)) {
             itemString += (`${item.name} (${item.price.toString()} vBucks) is currently in the item shop!\n`);
             console.log(`${key} match!`);
           }
