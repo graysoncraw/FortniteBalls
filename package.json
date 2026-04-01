@@ -1,30 +1,21 @@
 {
-  "name": "nodejs",
+  "name": "fortniteballs",
   "version": "1.0.0",
-  "description": "",
+  "description": "Discord bot for Fortnite stats, shop lookups, gifs, and item notifications.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "wrangler dev",
-    "deploy:staging": "wrangler deploy --minify --env staging",
-    "deploy:prod": "wrangler deploy --minify --env production",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "node --check index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^22.13.11",
-    "axios": "^1.8.4",
-    "cron": "^4.1.0",
-    "discord.js": "^14.18.0",
+    "axios": "^1.14.0",
+    "cron": "^4.4.0",
+    "discord.js": "^14.26.0",
     "djs-commander": "^0.0.50",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "node-fetch": "^3.3.2",
-    "nodejs": "file:",
-    "nodemon": "^3.1.9",
-    "pg": "^8.14.1",
-    "sqlite3": "^5.1.7"
+    "dotenv": "^17.2.3"
   }
 }
