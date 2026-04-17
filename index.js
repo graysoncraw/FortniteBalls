@@ -1,5 +1,6 @@
 require('dotenv').config();
 const TOKEN = process.env.TOKEN;
+const LOG_PREFIX = '[startup]';
 
 const { Client: DiscordClient, IntentsBitField } = require('discord.js');
 const { CommandHandler } = require('djs-commander');
@@ -23,4 +24,8 @@ new CommandHandler({
   //testServer: GUILD,
 });
 
-client.login(TOKEN);
+console.log(`${LOG_PREFIX} attempting Discord login`);
+client
+  .login(TOKEN)
+  .then(() => console.log(`${LOG_PREFIX} Discord login successful`))
+  .catch((err) => console.error(`${LOG_PREFIX} Discord login failed`, err?.message || err));

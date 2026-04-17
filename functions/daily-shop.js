@@ -1,77 +1,193 @@
 const APIKEY = process.env['FNBR_API'];
-const axios = require("axios");
-const { EmbedBuilder } = require('discord.js');
+const axios = require('axios');
+const {
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  StringSelectMenuBuilder,
+} = require('discord.js');
+const LOG_PREFIX = '[daily-shop]';
+
+const ITEMS_PER_RANGE = 25;
+
+const toTitleCase = (value) =>
+  value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Unknown';
+
+const truncate = (value, max) =>
+  value && value.length > max ? `${value.slice(0, max - 3)}...` : value;
+
+const getRangeStart = (index) => Math.floor(index / ITEMS_PER_RANGE) * ITEMS_PER_RANGE;
+
+const buildItemEmbed = (items, selectedIndex) => {
+  if (!items.length) {
+    return new EmbedBuilder()
+      .setTitle('Fortnite Daily Shop')
+      .setDescription('No shop items found.')
+      .setColor(0x1f8b4c)
+      .setFooter({ text: 'Shop is currently empty' });
+  }
+
+  const item = items[selectedIndex];
+  const name = item?.name || 'Unknown Item';
+  const description = item?.description ? String(item.description) : 'No description available.';
+  const price = item?.price ? `${item.price} vBucks` : 'N/A';
+  const rarity = toTitleCase(item?.rarity);
+  const imageUrl = item?.images?.featured || item?.images?.icon || null;
+
+  const embed = new EmbedBuilder()
+    .setTitle(name)
+    .setDescription(truncate(description, 1000))
+    .setColor(0x1f8b4c)
+    .addFields(
+      { name: 'Price', value: price, inline: true },
+      { name: 'Rarity', value: rarity, inline: true },
+      { name: '\u200B', value: '\u200B', inline: true }
+    )
+    .setFooter({ text: `Item ${selectedIndex + 1}/${items.length}` });
+
+  if (imageUrl) {
+    embed.setThumbnail(imageUrl);
+  }
+
+  return embed;
+};
+
+const buildControls = (items, selectedIndex, disabled = false) => {
+  if (!items.length) return [];
+
+  const totalRanges = Math.ceil(items.length / ITEMS_PER_RANGE);
+  const rangeStart = getRangeStart(selectedIndex);
+  const rangeEnd = Math.min(rangeStart + ITEMS_PER_RANGE, items.length);
+
+  const navRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('shop_prev_item')
+      .setLabel('Prev Item')
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(disabled || selectedIndex === 0),
+    new ButtonBuilder()
+      .setCustomId('shop_next_item')
+      .setLabel('Next Item')
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(disabled || selectedIndex >= items.length - 1)
+  );
+
+  const rangeSelect = new StringSelectMenuBuilder()
+    .setCustomId('shop_pick_range')
+    .setPlaceholder('Jump to item range')
+    .setDisabled(disabled)
+    .addOptions(
+      Array.from({ length: totalRanges }, (_, i) => {
+        const start = i * ITEMS_PER_RANGE;
+        const end = Math.min(start + ITEMS_PER_RANGE, items.length);
+        return {
+          label: `Items ${start + 1}-${end}`,
+          value: String(start),
+          default: start === rangeStart,
+        };
+      })
+    );
+
+  const itemSelect = new StringSelectMenuBuilder()
+    .setCustomId('shop_pick_item')
+    .setPlaceholder(`Pick item (${rangeStart + 1}-${rangeEnd})`)
+    .setDisabled(disabled)
+    .addOptions(
+      items.slice(rangeStart, rangeEnd).map((item, offset) => {
+        const globalIndex = rangeStart + offset;
+        const price = item?.price ? `${item.price} vB` : 'N/A';
+        return {
+          label: truncate(`${globalIndex + 1}. ${item?.name || 'Unknown Item'}`, 100),
+          description: truncate(`${price} • ${toTitleCase(item?.rarity)}`, 100),
+          value: String(globalIndex),
+          default: globalIndex === selectedIndex,
+        };
+      })
+    );
+
+  return [
+    navRow,
+    new ActionRowBuilder().addComponents(rangeSelect),
+    new ActionRowBuilder().addComponents(itemSelect),
+  ];
+};
 
 const getDailyShop = async (interaction) => {
-  // Get shop through fnbr.co API
   try {
+    console.log(`${LOG_PREFIX} request started`);
     const response = await axios.get('https://fnbr.co/api/shop', {
       headers: {
         'x-api-key': `${APIKEY}`,
       },
     });
 
-    const dailyshop = response.data;
-    const featuredItems = dailyshop.data.featured;
+    const featuredItems = response?.data?.data?.featured || [];
+    console.log(`${LOG_PREFIX} loaded ${featuredItems.length} featured item(s)`);
 
-    let embedArray = [];
+    if (typeof interaction.reply === 'function') {
+      let selectedIndex = 0;
 
-    for (const item of featuredItems) {
-      // Initial checks in case API is incorrect in a field
-      const description = item.description ? String(item.description) : 'No description available';
-      const price = item.price ? String(item.price) : 'N/A';
-      const rarity = item.rarity ? item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1) : 'Unknown';
-      const icon = item.images && item.images.icon ? item.images.icon : '';
+      const message = await interaction.reply({
+        embeds: [buildItemEmbed(featuredItems, selectedIndex)],
+        components: buildControls(featuredItems, selectedIndex),
+        fetchReply: true,
+      });
 
-      const embed = new EmbedBuilder()
-        .setTitle(item.name || 'Unknown Item') // Fallback for title if item.name is undefined
-        .setColor('Random')
-        .addFields({
-          name: 'Description',
-          value: description,
-          inline: false,
-        })
-        .addFields({
-          name: 'vBucks',
-          value: price,
-          inline: false,
-        })
-        .addFields({
-          name: 'Rarity',
-          value: rarity,
-          inline: false,
+      if (!featuredItems.length) return;
+
+      const collector = message.createMessageComponentCollector({ time: 180000 });
+
+      collector.on('collect', async (componentInteraction) => {
+        if (componentInteraction.user.id !== interaction.user.id) {
+          await componentInteraction.reply({
+            content: 'Only the command user can control this menu.',
+            ephemeral: true,
+          });
+          return;
+        }
+
+        if (componentInteraction.customId === 'shop_prev_item' && selectedIndex > 0) {
+          selectedIndex -= 1;
+        } else if (componentInteraction.customId === 'shop_next_item' && selectedIndex < featuredItems.length - 1) {
+          selectedIndex += 1;
+        } else if (componentInteraction.customId === 'shop_pick_range') {
+          selectedIndex = Number(componentInteraction.values[0]);
+        } else if (componentInteraction.customId === 'shop_pick_item') {
+          selectedIndex = Number(componentInteraction.values[0]);
+        }
+
+        await componentInteraction.update({
+          embeds: [buildItemEmbed(featuredItems, selectedIndex)],
+          components: buildControls(featuredItems, selectedIndex),
         });
+      });
 
-      if (icon) {
-        embed.setThumbnail(icon);
-      }
-
-      embedArray.push(embed);
-      console.log("Embed array stuffed")
+      collector.on('end', async () => {
+        try {
+          await interaction.editReply({
+            components: buildControls(featuredItems, selectedIndex, true),
+          });
+        } catch (collectorError) {
+          console.error(`${LOG_PREFIX} failed to disable shop controls`, collectorError?.message || collectorError);
+        }
+      });
+      return;
     }
 
-    try{
-      // Split embedArray into chunks of 10 or fewer
-      const chunks = [];
-      while (embedArray.length > 0) {
-        chunks.push(embedArray.splice(0, 10));
-      }
-
-      // Send the first chunk with reply
-      await interaction.reply({ embeds: chunks[0] });
-
-      // Send the remaining chunks with followUp
-      for (let i = 1; i < chunks.length; i++) {
-        await interaction.followUp({ embeds: chunks[i] });
-      }
-    }
-    catch (error) {
-      // If the "interaction" is actually a channel
-      interaction.send({ embeds: embedArray });
+    if (typeof interaction.send === 'function') {
+      await interaction.send({ embeds: [buildItemEmbed(featuredItems, 0)] });
+      return;
     }
   } catch (error) {
-    console.error(error);
-    interaction.reply('Something failed, idk. API is probably down, or my code sucks.');
+    console.error(`${LOG_PREFIX} request failed`, error?.response?.data || error?.message || error);
+    if (interaction?.replied || interaction?.deferred) {
+      await interaction.followUp('Something failed, idk. API is probably down, or my code sucks.');
+    } else if (typeof interaction?.reply === 'function') {
+      await interaction.reply('Something failed, idk. API is probably down, or my code sucks.');
+    } else if (typeof interaction?.send === 'function') {
+      await interaction.send('Something failed, idk. API is probably down, or my code sucks.');
+    }
   }
 };
 

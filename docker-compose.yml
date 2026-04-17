@@ -1,0 +1,15 @@
+services:
+  bot:
+    build: .
+    container_name: fortniteballs-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    networks:
+      - fortniteballs-net
+
+networks:
+  fortniteballs-net:
+    external: true

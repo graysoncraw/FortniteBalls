@@ -1,19 +1,19 @@
-const { getUsername, listItems } = require('../database/notifications-db');
+const { listNotifications } = require('../database/notifications-db');
+const LOG_PREFIX = '[notifs-stored]';
 
-const storedNotifications = async (interaction) => {  
-  
-  const keys = await listItems();
+const storedNotifications = async (interaction) => {
+  const notifications = await listNotifications();
 
-  if (keys.length === 0) {
-    interaction.reply("There are no notifications set");
+  if (notifications.length === 0) {
+    await interaction.reply('There are no notifications set');
   } else {
-    let itemString = "Current notifications set\n--------------------------\n";
-    for (const key of keys) {
-      const value = await getUsername(key);
-      itemString += `${key} - ${value}\n`;
+    let itemString = 'Current notifications set\n--------------------------\n';
+    for (const notification of notifications) {
+      const owner = notification.username;
+      itemString += `${notification.item} - ${owner}\n`;
     }
-    console.log("Retreived stored notifs successfully")
-    interaction.reply(itemString);
+    console.log(`${LOG_PREFIX} returned ${notifications.length} stored notification(s)`);
+    await interaction.reply(itemString);
   }
 };
 

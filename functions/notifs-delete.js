@@ -1,16 +1,21 @@
 const { deleteItem, listItems } = require('../database/notifications-db');
+const LOG_PREFIX = '[notifs-delete]';
 
-const deleteNotifications = async (interaction, item) => {  
-  var keys = await listItems();
-  console.log(keys)
+const deleteNotifications = async (interaction, item) => {
+  const keys = await listItems();
 
   if (keys.includes(item)) {
-    deleteItem(item);
-    interaction.reply(`Successfully deleted ${item} from the database.`);
+    const deleted = await deleteItem(item);
+    if (deleted) {
+      console.log(`${LOG_PREFIX} deleted notification (item=${item})`);
+      await interaction.reply(`Successfully deleted ${item} from the database.`);
+    } else {
+      console.error(`${LOG_PREFIX} delete failed (item=${item})`);
+      await interaction.reply(`Failed to delete ${item}. Please try again.`);
+    }
   } else {
-    interaction.reply(`${item} does not exist within the database (check your casing).`);
+    await interaction.reply(`${item} does not exist within the database (check your casing).`);
   }
-  console.log(`${item} removed from DB`);
 };
 
 module.exports = deleteNotifications;
